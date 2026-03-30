@@ -89,7 +89,8 @@ describe('CreateOrderDto', () => {
     });
 
     it('items가 없으면 에러', async () => {
-      const { items: _items, ...rest } = validData;
+      const { items: _unusedItems, ...rest } = validData;
+      void _unusedItems;
       const dto = plainToInstance(CreateOrderDto, rest);
       const errors = await validate(dto);
       expect(errors.length).toBeGreaterThan(0);
@@ -103,16 +104,15 @@ describe('CreateOrderDto', () => {
         delivery_address: '',
       });
       const errors = await validate(dto);
-      const addrError = errors.find(
-        (e) => e.property === 'delivery_address',
-      );
+      const addrError = errors.find((e) => e.property === 'delivery_address');
       expect(addrError).toBeDefined();
     });
   });
 
   describe('delivery_date', () => {
     it('Optional이므로 없어도 통과', async () => {
-      const { delivery_date: _dd, ...rest } = validData;
+      const { delivery_date: _unusedDate, ...rest } = validData;
+      void _unusedDate;
       const dto = plainToInstance(CreateOrderDto, rest);
       const errors = await validate(dto);
       expect(errors).toHaveLength(0);
@@ -124,16 +124,15 @@ describe('CreateOrderDto', () => {
         delivery_date: '2025/04/03',
       });
       const errors = await validate(dto);
-      const dateError = errors.find(
-        (e) => e.property === 'delivery_date',
-      );
+      const dateError = errors.find((e) => e.property === 'delivery_date');
       expect(dateError).toBeDefined();
     });
   });
 
   describe('is_cold', () => {
     it('Optional이므로 없어도 통과', async () => {
-      const { is_cold: _ic, ...rest } = validData;
+      const { is_cold: _unusedCold, ...rest } = validData;
+      void _unusedCold;
       const dto = plainToInstance(CreateOrderDto, rest);
       const errors = await validate(dto);
       expect(errors).toHaveLength(0);
