@@ -97,6 +97,8 @@
 | products | 상품 목록 (필터/정렬/검색/페이지네이션), 상세 |
 | orders | 주문 생성 (Mock 결제 + rpc 트랜잭션), 목록/상세 조회 |
 | trend | 트렌드 랭킹 (rpc), 업종별 베스트셀러 (rpc) |
+| prediction | 수요 예측 (선형 회귀 + 이동평균), 재입고 추천 |
+| recommendation | 업종 기반 상품 추천, 재주문 추천 (구매 간격 분석) |
 | common | SupabaseModule(글로벌), JWT 가드/전략, 응답 인터셉터, 에러 필터, CurrentUser 데코레이터 |
 
 ---
@@ -126,6 +128,8 @@
 - [x] Trend 모듈 — 주간/월간 랭킹 (rpc, 이전 기간 대비 변동 표시)
 - [x] 업종별 베스트셀러 (rpc)
 
-### Phase 2 — 고도화
-- [ ] 수요 예측 API
-- [ ] 개인화 추천 API
+### Phase 2 — AI 기능 (v1.3.0)
+- [x] Prediction 모듈 — 수요 예측 (선형 회귀 + 가중 이동평균, rpc)
+- [x] Recommendation 모듈 — 업종 기반 추천, 재주문 추천 (구매 간격 분석, rpc)
+- [x] AI용 PostgreSQL rpc 함수 4개 추가
+- [x] 시드 주문 데이터 보강 (100건+, 90일 분산)

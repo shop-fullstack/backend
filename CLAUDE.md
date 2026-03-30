@@ -36,12 +36,14 @@
 ## 모듈 구조
 ```
 src/
-├── auth/       # 회원가입, 로그인, JWT 발급/검증
-├── users/      # 유저 정보 조회/수정
-├── products/   # 상품 목록, 상세 (인기순 rpc 함수 포함)
-├── orders/     # 주문 생성(rpc 트랜잭션), 조회
-├── trend/      # 트렌드 랭킹(rpc), 업종별 베스트셀러(rpc)
-└── common/     # SupabaseModule, JWT 가드/전략, 인터셉터, 필터, 데코레이터
+├── auth/           # 회원가입, 로그인, JWT 발급/검증
+├── users/          # 유저 정보 조회/수정
+├── products/       # 상품 목록, 상세 (인기순 rpc 함수 포함)
+├── orders/         # 주문 생성(rpc 트랜잭션), 조회
+├── trend/          # 트렌드 랭킹(rpc), 업종별 베스트셀러(rpc)
+├── prediction/     # 수요 예측(선형회귀+이동평균), 재입고 추천
+├── recommendation/ # 업종 기반 추천, 재주문 추천(구매간격 분석)
+└── common/         # SupabaseModule, JWT 가드/전략, 인터셉터, 필터, 데코레이터
 ```
 
 ## DB 테이블 네이밍

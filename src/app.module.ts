@@ -10,6 +10,8 @@ import { UsersModule } from './users/users.module';
 import { ProductsModule } from './products/products.module';
 import { OrdersModule } from './orders/orders.module';
 import { TrendModule } from './trend/trend.module';
+import { PredictionModule } from './prediction/prediction.module';
+import { RecommendationModule } from './recommendation/recommendation.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { TrendModule } from './trend/trend.module';
     ProductsModule,
     OrdersModule,
     TrendModule,
+    PredictionModule,
+    RecommendationModule,
   ],
   providers: [
     { provide: APP_INTERCEPTOR, useClass: ResponseInterceptor },
