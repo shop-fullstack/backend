@@ -56,16 +56,17 @@ export class ProductsService {
     }
 
     return {
-      items: (data as Pick<
-        ProductRow,
-        | 'id'
-        | 'name'
-        | 'category'
-        | 'price_per_unit'
-        | 'price_per_box'
-        | 'moq'
-        | 'image_url'
-      >[]) || [],
+      items:
+        (data as Pick<
+          ProductRow,
+          | 'id'
+          | 'name'
+          | 'category'
+          | 'price_per_unit'
+          | 'price_per_box'
+          | 'moq'
+          | 'image_url'
+        >[]) || [],
       total: count || 0,
       page,
       limit,
@@ -112,6 +113,7 @@ export class ProductsService {
     const total = items.length > 0 ? Number(items[0].total) : 0;
 
     return {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       items: items.map(({ total: _total, ...rest }) => rest),
       total,
       page,

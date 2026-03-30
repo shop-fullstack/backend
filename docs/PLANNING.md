@@ -3,7 +3,7 @@
 
 ---
 
-## 현재 버전: v1.1.0
+## 현재 버전: v1.2.0
 
 ---
 
@@ -58,7 +58,7 @@
 |------|------|------|
 | id | uuid | PK (내부용) |
 | order_number | varchar(20) | 주문번호 (BM-YYYYMMDD-NNNN, 유니크) |
-| user_id | uuid | FK → shop_users.id |
+| user_id | uuid | FK -> shop_users.id |
 | status | varchar(20) | 주문완료/배송준비/배송중/배송완료 |
 | total_amount | integer | 총 결제금액 |
 | delivery_address | varchar(500) | 배송지 |
@@ -70,8 +70,8 @@
 | 컬럼 | 타입 | 설명 |
 |------|------|------|
 | id | uuid | PK |
-| order_id | uuid | FK → shop_orders.id (CASCADE) |
-| product_id | uuid | FK → shop_products.id |
+| order_id | uuid | FK -> shop_orders.id (CASCADE) |
+| product_id | uuid | FK -> shop_products.id |
 | quantity | integer | 수량 |
 | unit_price | integer | 주문 당시 박스 단가 |
 
@@ -115,7 +115,7 @@
 
 ## 로드맵
 
-### Phase 1 — MVP ✅
+### Phase 1 — MVP (v1.0.0 ~ v1.2.0)
 - [x] NestJS 프로젝트 초기 세팅
 - [x] Supabase 연동 (테이블 + rpc 함수 생성)
 - [x] Auth 모듈 (회원가입, 로그인, JWT, 로그아웃)
@@ -123,11 +123,9 @@
 - [x] Products 모듈 (목록/상세, 필터/정렬/검색/페이지네이션)
 - [x] Orders 모듈 (Mock 결제 + rpc 트랜잭션)
 - [x] Common 모듈 (가드, 인터셉터, 필터, 데코레이터)
-
-### Phase 2 — AI 기능 ✅
 - [x] Trend 모듈 — 주간/월간 랭킹 (rpc, 이전 기간 대비 변동 표시)
 - [x] 업종별 베스트셀러 (rpc)
 
-### Phase 3 — 고도화
+### Phase 2 — 고도화
 - [ ] 수요 예측 API
 - [ ] 개인화 추천 API

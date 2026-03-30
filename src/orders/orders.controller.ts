@@ -24,10 +24,7 @@ export class OrdersController {
   }
 
   @Get()
-  findAll(
-    @CurrentUser() user: JwtPayload,
-    @Query('status') status?: string,
-  ) {
+  findAll(@CurrentUser() user: JwtPayload, @Query('status') status?: string) {
     return this.ordersService.findAllByUser(user.id, status);
   }
 

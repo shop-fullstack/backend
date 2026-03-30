@@ -5,9 +5,11 @@
 소상공인 대상 AI 트렌드 인사이트 종합 도매 플랫폼
 
 ## 문서 참조
-- 기획 및 기능 명세 → `PLANNING.md`
-- 변경 이력 → `CHANGELOG.md`
-- 전체 API 명세 → `API_DOCS.md`
+- 기획 및 기능 명세 → `docs/PLANNING.md`
+- 변경 이력 → `docs/CHANGELOG.md`
+- 전체 API 명세 → `docs/API_DOCS.md`
+- API 인수인계 (내부 동작 설명) → `docs/API_HANDOVER.md`
+- 프론트엔드 연동 가이드 → `docs/FRONTEND_GUIDE.md`
 - DB 스키마 → `supabase/migrations/001_create_tables.sql`
 - DB 함수 → `supabase/migrations/002_create_functions.sql`
 - 시드 데이터 → `supabase/seed.sql`

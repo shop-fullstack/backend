@@ -45,7 +45,7 @@ Content-Type: application/json
 
 | 항목 | 내용 |
 |------|------|
-| 인증 필요 | ❌ |
+| 인증 필요 | - |
 | 상태 코드 | 201 |
 
 **요청 Body**
@@ -62,12 +62,12 @@ Content-Type: application/json
 
 | 필드 | 타입 | 필수 | 검증 |
 |------|------|------|------|
-| email | string | ✅ | 이메일 형식 |
-| password | string | ✅ | 최소 8자 |
-| business_number | string | ✅ | - |
-| business_type | string | ✅ | - |
-| company_name | string | ✅ | - |
-| owner_name | string | ✅ | - |
+| email | string | O | 이메일 형식 |
+| password | string | O | 최소 8자 |
+| business_number | string | O | - |
+| business_type | string | O | - |
+| company_name | string | O | - |
+| owner_name | string | O | - |
 
 **성공 응답** `201`
 ```json
@@ -100,7 +100,7 @@ Content-Type: application/json
 
 | 항목 | 내용 |
 |------|------|
-| 인증 필요 | ❌ |
+| 인증 필요 | - |
 | 상태 코드 | 200 |
 
 **요청 Body**
@@ -141,7 +141,7 @@ Content-Type: application/json
 
 | 항목 | 내용 |
 |------|------|
-| 인증 필요 | ✅ |
+| 인증 필요 | O |
 | 상태 코드 | 200 |
 
 **성공 응답** `200`
@@ -162,7 +162,7 @@ Content-Type: application/json
 
 | 항목 | 내용 |
 |------|------|
-| 인증 필요 | ✅ |
+| 인증 필요 | O |
 
 **성공 응답** `200`
 ```json
@@ -189,7 +189,7 @@ Content-Type: application/json
 
 | 항목 | 내용 |
 |------|------|
-| 인증 필요 | ✅ |
+| 인증 필요 | O |
 
 **요청 Body** (변경할 필드만 전송)
 ```json
@@ -201,10 +201,10 @@ Content-Type: application/json
 
 | 필드 | 타입 | 필수 |
 |------|------|------|
-| company_name | string | ❌ |
-| business_type | string | ❌ |
-| owner_name | string | ❌ |
-| business_number | string | ❌ |
+| company_name | string | - |
+| business_type | string | - |
+| owner_name | string | - |
+| business_number | string | - |
 
 **성공 응답** `200` — 수정된 전체 유저 정보 (GET /users/me와 동일 형식)
 
@@ -217,7 +217,7 @@ Content-Type: application/json
 
 | 항목 | 내용 |
 |------|------|
-| 인증 필요 | ❌ |
+| 인증 필요 | - |
 
 **쿼리 파라미터**
 | 파라미터 | 타입 | 기본값 | 설명 |
@@ -261,7 +261,7 @@ Content-Type: application/json
 
 | 항목 | 내용 |
 |------|------|
-| 인증 필요 | ❌ |
+| 인증 필요 | - |
 
 **성공 응답** `200`
 ```json
@@ -297,7 +297,7 @@ Content-Type: application/json
 
 | 항목 | 내용 |
 |------|------|
-| 인증 필요 | ✅ |
+| 인증 필요 | O |
 | 상태 코드 | 201 |
 | 결제 처리 | Mock — PostgreSQL `create_order` 함수로 트랜잭션 처리, status 즉시 '주문완료' |
 
@@ -316,10 +316,10 @@ Content-Type: application/json
 
 | 필드 | 타입 | 필수 | 검증 |
 |------|------|------|------|
-| items | array | ✅ | 최소 1개, 각 항목에 product_id(UUID) + quantity(1 이상) |
-| delivery_address | string | ✅ | 비어있으면 안 됨 |
-| delivery_date | string | ❌ | YYYY-MM-DD 형식 |
-| is_cold | boolean | ❌ | 기본값 false |
+| items | array | O | 최소 1개, 각 항목에 product_id(UUID) + quantity(1 이상) |
+| delivery_address | string | O | 비어있으면 안 됨 |
+| delivery_date | string | - | YYYY-MM-DD 형식 |
+| is_cold | boolean | - | 기본값 false |
 
 > `unit_price`는 주문 시점의 `products.price_per_box` 값으로 자동 설정
 
@@ -349,7 +349,7 @@ Content-Type: application/json
 
 | 항목 | 내용 |
 |------|------|
-| 인증 필요 | ✅ |
+| 인증 필요 | O |
 
 **쿼리 파라미터**
 | 파라미터 | 타입 | 기본값 | 설명 |
@@ -381,7 +381,7 @@ Content-Type: application/json
 
 | 항목 | 내용 |
 |------|------|
-| 인증 필요 | ✅ |
+| 인증 필요 | O |
 | :id | 주문번호 (BM-YYYYMMDD-NNNN) |
 
 **성공 응답** `200`
@@ -423,7 +423,7 @@ Content-Type: application/json
 
 | 항목 | 내용 |
 |------|------|
-| 인증 필요 | ✅ |
+| 인증 필요 | O |
 | 내부 구현 | PostgreSQL `get_trend_report` rpc 함수 |
 
 **쿼리 파라미터**
@@ -463,14 +463,14 @@ Content-Type: application/json
 
 | 항목 | 내용 |
 |------|------|
-| 인증 필요 | ✅ |
+| 인증 필요 | O |
 | 내부 구현 | PostgreSQL `get_trend_best` rpc 함수 |
 
 **쿼리 파라미터**
 | 파라미터 | 타입 | 필수 | 설명 |
 |---------|------|------|------|
-| type | string | ✅ | 카페/베이커리, 식당/외식업, 미용실/뷰티, 편의점/소매업, 네일샵/피부샵 |
-| limit | number | ❌ | 랭킹 개수 (기본 10, 최소 1, 최대 50) |
+| type | string | O | 카페/베이커리, 식당/외식업, 미용실/뷰티, 편의점/소매업, 네일샵/피부샵 |
+| limit | number | - | 랭킹 개수 (기본 10, 최소 1, 최대 50) |
 
 **성공 응답** `200`
 ```json
