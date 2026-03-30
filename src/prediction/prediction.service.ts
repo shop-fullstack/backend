@@ -93,6 +93,113 @@ export class PredictionService {
     };
   }
 
+  /**
+   * 프론트엔드 스펙 맞춤: GET /forecast?business_type=X
+   * 상품 6개 × 주간 4주 예측 + 신뢰구간
+   */
+  async getForecastForFrontend(businessType: string) {
+    const supabase = this.supabaseService.getClient();
+
+    // 1. 해당 업종에서 인기 상품 6개 조회
+    const { data: stats, error: statsError } = await supabase.rpc(
+      'get_business_type_product_stats',
+      { p_business_type: businessType, p_limit: 6 },
+    );
+
+    if (statsError) {
+      throw new BadRequestException(statsError.message);
+    }
+
+    const products = (stats as BusinessTypeProductStat[]) || [];
+
+    // 2. 각 상품별 수요 이력 + 예측
+    const forecasts = await Promise.all(
+      products.map(async (product) => {
+        const { data: history } = await supabase.rpc('get_demand_history', {
+          p_product_id: product.product_id,
+          p_days: 56, // 8주 데이터
+        });
+
+        const rows = (history as DemandHistoryRow[]) || [];
+        const quantities = rows.map((h) => Number(h.total_qty));
+
+        // 주간 합산 (7일씩)
+        const weeklyData: number[] = [];
+        for (let i = 0; i < quantities.length; i += 7) {
+          const week = quantities.slice(i, i + 7);
+          weeklyData.push(week.reduce((s, v) => s + v, 0));
+        }
+
+        const recentWeeklyAvg =
+          weeklyData.length > 0
+            ? weeklyData.reduce((s, v) => s + v, 0) / weeklyData.length
+            : 0;
+
+        // 선형 회귀로 주간 예측
+        const model = linearRegression(weeklyData);
+        const rawPredictions = extrapolate(model, 4, weeklyData.length);
+
+        // 신뢰구간: 표준편차 기반
+        const variance =
+          weeklyData.length > 0
+            ? weeklyData.reduce(
+                (sum, v) => sum + Math.pow(v - recentWeeklyAvg, 2),
+                0,
+              ) / weeklyData.length
+            : 0;
+        const stdDev = Math.sqrt(variance);
+
+        // 4주 예측 + 날짜 라벨
+        const today = new Date();
+        const forecast = rawPredictions.map((predicted, i) => {
+          const weekStart = new Date(today);
+          weekStart.setDate(today.getDate() + i * 7);
+          const weekEnd = new Date(weekStart);
+          weekEnd.setDate(weekStart.getDate() + 6);
+
+          const predictedOrders = Math.round(Math.max(0, predicted));
+
+          return {
+            week_label: `${weekStart.getMonth() + 1}/${weekStart.getDate()}~${weekEnd.getMonth() + 1}/${weekEnd.getDate()}`,
+            predicted_orders: predictedOrders,
+            confidence_low: Math.round(Math.max(0, predicted - stdDev * 1.2)),
+            confidence_high: Math.round(Math.max(0, predicted + stdDev * 1.2)),
+          };
+        });
+
+        // 추세 판단
+        const changePercent =
+          recentWeeklyAvg > 0
+            ? Math.round(
+                ((rawPredictions[0] - recentWeeklyAvg) / recentWeeklyAvg) * 100,
+              )
+            : 0;
+
+        let trend: 'rising' | 'stable' | 'declining';
+        if (changePercent > 5) trend = 'rising';
+        else if (changePercent < -5) trend = 'declining';
+        else trend = 'stable';
+
+        return {
+          product_id: product.product_id,
+          product_name: product.name,
+          category: product.category,
+          current_weekly_avg: Math.round(recentWeeklyAvg),
+          forecast,
+          trend,
+          change_percent: changePercent,
+        };
+      }),
+    );
+
+    return {
+      business_type: businessType,
+      period: '4주',
+      forecasts,
+      generated_at: new Date().toISOString(),
+    };
+  }
+
   async getRestockByUserId(userId: string, limit: number = 10) {
     const supabase = this.supabaseService.getClient();
 

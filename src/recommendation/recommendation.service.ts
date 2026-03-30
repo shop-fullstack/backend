@@ -83,6 +83,94 @@ export class RecommendationService {
     };
   }
 
+  /**
+   * 프론트엔드 스펙 맞춤: GET /recommend?business_type=X
+   * full product 객체 + reason(한글) + score(0-100) + reason_type 반환
+   */
+  async getRecommendForFrontend(businessType: string) {
+    const supabase = this.supabaseService.getClient();
+
+    // 업종별 인기 상품 조회
+    const { data: stats, error: statsError } = await supabase.rpc(
+      'get_business_type_product_stats',
+      { p_business_type: businessType, p_limit: 8 },
+    );
+
+    if (statsError) {
+      throw new BadRequestException(statsError.message);
+    }
+
+    const products = (stats as BusinessTypeProductStat[]) || [];
+
+    // 트렌드 상품 조회
+    const { data: trendData } = await supabase.rpc('get_trend_report', {
+      p_period: 'weekly',
+      p_limit: 8,
+    });
+
+    interface TrendItem {
+      product_id: string;
+      change: string;
+    }
+    const trendingIds = new Set(
+      ((trendData as TrendItem[]) || [])
+        .filter((t) => t.change === 'up' || t.change === 'new')
+        .map((t) => t.product_id),
+    );
+
+    const maxOrderCount = Math.max(...products.map((p) => p.order_count), 1);
+    const maxBuyerCount = Math.max(...products.map((p) => p.buyer_count), 1);
+
+    const items = products.map((p) => {
+      const isTrending = trendingIds.has(p.product_id);
+      const orderScore = p.order_count / maxOrderCount;
+      const buyerScore = p.buyer_count / maxBuyerCount;
+      const baseScore = orderScore * 0.5 + buyerScore * 0.5;
+
+      let reasonType:
+        | 'business_type'
+        | 'trending'
+        | 'order_history'
+        | 'similar';
+      let reason: string;
+      let score: number;
+
+      if (isTrending) {
+        reasonType = 'trending';
+        reason = '최근 트렌드 상승 상품';
+        score = Math.round(Math.min(60 + baseScore * 30, 90));
+      } else {
+        reasonType = 'business_type';
+        reason = '업종 인기 상품';
+        score = Math.round(Math.min(75 + baseScore * 25, 100));
+      }
+
+      return {
+        product: {
+          id: p.product_id,
+          name: p.name,
+          category: p.category,
+          price_per_unit: 0,
+          price_per_box: p.price_per_box,
+          moq: 1,
+          image_url: `https://placehold.co/400x400?text=${encodeURIComponent(p.name.slice(0, 6))}`,
+        },
+        reason,
+        score,
+        reason_type: reasonType,
+      };
+    });
+
+    // score 내림차순, 최대 8개
+    items.sort((a, b) => b.score - a.score);
+
+    return {
+      user_business_type: businessType,
+      items: items.slice(0, 8),
+      generated_at: new Date().toISOString(),
+    };
+  }
+
   async getReorderSuggestions(userId: string, limit: number = 10) {
     const supabase = this.supabaseService.getClient();
 

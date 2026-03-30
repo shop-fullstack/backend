@@ -9,6 +9,7 @@ describe('PredictionController', () => {
   const mockPredictionService = {
     getForecast: jest.fn(),
     getRestockByUserId: jest.fn(),
+    getForecastForFrontend: jest.fn(),
   };
 
   const mockJwtPayload = { id: 'user-1', email: 'test@bizmart.com' };
@@ -62,6 +63,27 @@ describe('PredictionController', () => {
       expect(predictionService.getRestockByUserId).toHaveBeenCalledWith(
         'user-1',
         10,
+      );
+    });
+  });
+
+  describe('getForecastForFrontend', () => {
+    it('business_type을 서비스에 전달해야 한다', async () => {
+      const expected = {
+        business_type: '카페/베이커리',
+        period: '4주',
+        forecasts: [],
+        generated_at: '2025-03-30T00:00:00Z',
+      };
+      mockPredictionService.getForecastForFrontend.mockResolvedValue(expected);
+
+      const result = await controller.getForecastForFrontend({
+        business_type: '카페/베이커리',
+      });
+
+      expect(result).toEqual(expected);
+      expect(predictionService.getForecastForFrontend).toHaveBeenCalledWith(
+        '카페/베이커리',
       );
     });
   });

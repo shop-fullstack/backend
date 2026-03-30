@@ -9,6 +9,7 @@ describe('RecommendationController', () => {
   const mockRecommendationService = {
     getRecommendations: jest.fn(),
     getReorderSuggestions: jest.fn(),
+    getRecommendForFrontend: jest.fn(),
   };
 
   const mockJwtPayload = { id: 'user-1', email: 'test@bizmart.com' };
@@ -68,6 +69,28 @@ describe('RecommendationController', () => {
         'user-1',
         10,
       );
+    });
+  });
+
+  describe('getRecommendForFrontend', () => {
+    it('business_type을 서비스에 전달해야 한다', async () => {
+      const expected = {
+        user_business_type: '카페/베이커리',
+        items: [],
+        generated_at: '2025-03-30T00:00:00Z',
+      };
+      mockRecommendationService.getRecommendForFrontend.mockResolvedValue(
+        expected,
+      );
+
+      const result = await controller.getRecommendForFrontend({
+        business_type: '카페/베이커리',
+      });
+
+      expect(result).toEqual(expected);
+      expect(
+        recommendationService.getRecommendForFrontend,
+      ).toHaveBeenCalledWith('카페/베이커리');
     });
   });
 });

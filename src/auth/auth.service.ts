@@ -42,7 +42,9 @@ export class AuthService {
         company_name: dto.company_name,
         owner_name: dto.owner_name,
       })
-      .select('id, email, business_type, grade')
+      .select(
+        'id, email, business_number, business_type, company_name, owner_name, grade, created_at',
+      )
       .single();
 
     if (error || !user) {
@@ -51,10 +53,7 @@ export class AuthService {
       );
     }
 
-    const typedUser = user as Pick<
-      UserRow,
-      'id' | 'email' | 'business_type' | 'grade'
-    >;
+    const typedUser = user as Omit<UserRow, 'password'>;
 
     return {
       message: '회원가입이 완료되었습니다',
@@ -63,8 +62,12 @@ export class AuthService {
         user: {
           id: typedUser.id,
           email: typedUser.email,
+          business_number: typedUser.business_number,
           business_type: typedUser.business_type,
+          company_name: typedUser.company_name,
+          owner_name: typedUser.owner_name,
           grade: typedUser.grade,
+          created_at: typedUser.created_at,
         },
       },
     };
@@ -104,9 +107,12 @@ export class AuthService {
         user: {
           id: typedUser.id,
           email: typedUser.email,
-          company_name: typedUser.company_name,
+          business_number: typedUser.business_number,
           business_type: typedUser.business_type,
+          company_name: typedUser.company_name,
+          owner_name: typedUser.owner_name,
           grade: typedUser.grade,
+          created_at: typedUser.created_at,
         },
       },
     };

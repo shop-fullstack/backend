@@ -38,7 +38,7 @@ export class OrdersService {
     let queryBuilder = supabase
       .from('shop_orders')
       .select(
-        'order_number, status, total_amount, delivery_date, is_cold, created_at',
+        'id, order_number, status, total_amount, delivery_address, delivery_date, is_cold, created_at',
       )
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
@@ -54,18 +54,54 @@ export class OrdersService {
     }
 
     interface OrderListRow {
+      id: string;
       order_number: string;
       status: string;
       total_amount: number;
+      delivery_address: string;
       delivery_date: string;
       is_cold: boolean;
       created_at: string;
     }
 
-    return (data as OrderListRow[]).map(({ order_number, ...rest }) => ({
-      id: order_number,
-      ...rest,
-    }));
+    const orders = (data as OrderListRow[]) || [];
+
+    // 각 주문의 items를 조회
+    const result = await Promise.all(
+      orders.map(async (order) => {
+        const { data: items } = await supabase
+          .from('shop_order_items')
+          .select('product_id, quantity, unit_price, shop_products(name)')
+          .eq('order_id', order.id);
+
+        interface OrderItemWithProduct {
+          product_id: string;
+          quantity: number;
+          unit_price: number;
+          shop_products: { name: string } | null;
+        }
+
+        const typedItems = (items as unknown as OrderItemWithProduct[]) || [];
+
+        return {
+          id: order.order_number,
+          status: order.status,
+          total_amount: order.total_amount,
+          delivery_address: order.delivery_address,
+          delivery_date: order.delivery_date,
+          is_cold: order.is_cold,
+          items: typedItems.map((item) => ({
+            product_id: item.product_id,
+            name: item.shop_products?.name || '',
+            quantity: item.quantity,
+            unit_price: item.unit_price,
+          })),
+          created_at: order.created_at,
+        };
+      }),
+    );
+
+    return result;
   }
 
   async findOne(orderNumber: string, userId: string) {
