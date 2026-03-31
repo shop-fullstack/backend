@@ -12,6 +12,7 @@ import { OrdersModule } from './orders/orders.module';
 import { TrendModule } from './trend/trend.module';
 import { PredictionModule } from './prediction/prediction.module';
 import { RecommendationModule } from './recommendation/recommendation.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { RecommendationModule } from './recommendation/recommendation.module';
     TrendModule,
     PredictionModule,
     RecommendationModule,
+    ChatModule,
   ],
   providers: [
     { provide: APP_INTERCEPTOR, useClass: ResponseInterceptor },

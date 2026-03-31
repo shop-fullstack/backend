@@ -43,6 +43,7 @@ src/
 ├── trend/          # 트렌드 랭킹(rpc), 업종별 베스트셀러(rpc)
 ├── prediction/     # 수요 예측(선형회귀+이동평균), 재입고 추천
 ├── recommendation/ # 업종 기반 추천, 재주문 추천(구매간격 분석)
+├── chat/           # AI 챗봇 (Gemini 3.1 Flash 연동)
 └── common/         # SupabaseModule, JWT 가드/전략, 인터셉터, 필터, 데코레이터
 ```
 
