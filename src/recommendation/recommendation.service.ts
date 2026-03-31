@@ -1,5 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { SupabaseService } from '../common/supabase/supabase.service';
+import { GeminiService } from '../common/gemini/gemini.service';
 
 interface BusinessTypeProductStat {
   product_id: string;
@@ -24,7 +25,10 @@ interface PurchaseHistoryRow {
 
 @Injectable()
 export class RecommendationService {
-  constructor(private readonly supabaseService: SupabaseService) {}
+  constructor(
+    private readonly supabaseService: SupabaseService,
+    private readonly geminiService: GeminiService,
+  ) {}
 
   async getRecommendations(userId: string, limit: number = 10) {
     const supabase = this.supabaseService.getClient();
@@ -163,10 +167,27 @@ export class RecommendationService {
 
     // score 내림차순, 최대 8개
     items.sort((a, b) => b.score - a.score);
+    const finalItems = items.slice(0, 8);
+
+    // Gemini AI 인사이트 생성
+    const dataContext = finalItems
+      .map(
+        (item, i) =>
+          `${i + 1}. ${item.product.name} (${item.product.category}) - 점수: ${item.score}, 추천유형: ${item.reason_type}`,
+      )
+      .join('\n');
+
+    const aiInsight = await this.geminiService.getInsight(
+      `당신은 B2B 도매 플랫폼의 상품 추천 분석가입니다. ${businessType} 업종 사장님에게 추천 결과를 분석해주세요.
+규칙: 한국어, 3~4문장, 핵심만 간결하게, 왜 이 상품들이 추천되는지 업종 특성과 연결해서 설명`,
+      dataContext,
+      `${businessType} 업종에 이 상품들이 추천된 이유를 분석해주세요.`,
+    );
 
     return {
       user_business_type: businessType,
-      items: items.slice(0, 8),
+      items: finalItems,
+      ai_insight: aiInsight,
       generated_at: new Date().toISOString(),
     };
   }

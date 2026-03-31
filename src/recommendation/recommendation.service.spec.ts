@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BadRequestException } from '@nestjs/common';
 import { RecommendationService } from './recommendation.service';
 import { SupabaseService } from '../common/supabase/supabase.service';
+import { GeminiService } from '../common/gemini/gemini.service';
 import {
   createMockSupabaseClient,
   createMockQueryBuilder,
@@ -25,6 +26,12 @@ describe('RecommendationService', () => {
         {
           provide: SupabaseService,
           useValue: { getClient: () => mockClient },
+        },
+        {
+          provide: GeminiService,
+          useValue: {
+            getInsight: jest.fn().mockResolvedValue('AI 분석 결과입니다.'),
+          },
         },
       ],
     }).compile();

@@ -13,11 +13,13 @@ import { TrendModule } from './trend/trend.module';
 import { PredictionModule } from './prediction/prediction.module';
 import { RecommendationModule } from './recommendation/recommendation.module';
 import { ChatModule } from './chat/chat.module';
+import { GeminiModule } from './common/gemini/gemini.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     SupabaseModule,
+    GeminiModule,
     AuthModule,
     UsersModule,
     ProductsModule,

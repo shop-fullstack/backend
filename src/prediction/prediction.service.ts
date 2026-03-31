@@ -1,5 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { SupabaseService } from '../common/supabase/supabase.service';
+import { GeminiService } from '../common/gemini/gemini.service';
 import { linearRegression, extrapolate } from './algorithms/linear-regression';
 import { weightedMovingAverage } from './algorithms/moving-average';
 
@@ -20,7 +21,10 @@ interface BusinessTypeProductStat {
 
 @Injectable()
 export class PredictionService {
-  constructor(private readonly supabaseService: SupabaseService) {}
+  constructor(
+    private readonly supabaseService: SupabaseService,
+    private readonly geminiService: GeminiService,
+  ) {}
 
   async getForecast(productId: string, days: number = 30) {
     const supabase = this.supabaseService.getClient();
@@ -192,10 +196,26 @@ export class PredictionService {
       }),
     );
 
+    // Gemini AI 인사이트 생성
+    const dataContext = forecasts
+      .map(
+        (f) =>
+          `${f.product_name} (${f.category}): 주간평균 ${f.current_weekly_avg}건, 추세 ${f.trend}, 변화율 ${f.change_percent}%`,
+      )
+      .join('\n');
+
+    const aiInsight = await this.geminiService.getInsight(
+      `당신은 B2B 도매 플랫폼의 수요 예측 분석가입니다. ${businessType} 업종의 향후 4주 수요 예측 데이터를 분석해주세요.
+규칙: 한국어, 4~5문장, 상승/하락 상품을 짚어주고 재고 관리 조언을 구체적으로 제공`,
+      dataContext,
+      `${businessType} 업종의 수요 예측 결과를 분석하고, 사장님에게 재고 관리 조언을 해주세요.`,
+    );
+
     return {
       business_type: businessType,
       period: '4주',
       forecasts,
+      ai_insight: aiInsight,
       generated_at: new Date().toISOString(),
     };
   }
